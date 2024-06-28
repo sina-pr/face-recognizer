@@ -5,7 +5,7 @@ const {
   runFaceRecognition,
 } = require('./faceRecognition');
 const { setupRoutes } = require('./routes');
-const { setupButtonListener, cleanup } = require('./buttonController');
+// const { setupButtonListener, cleanup } = require('./buttonController');
 
 const app = express();
 const port = 3000;
@@ -26,7 +26,8 @@ const server = app.listen(port, () => {
 async function initialize() {
   try {
     await initializeFaceRecognition(); // Load models and create face matchers
-    setupButtonListener(runFaceRecognition); // Setup button listener
+    // setupButtonListener(runFaceRecognition); // Setup button listener
+    await runFaceRecognition();
   } catch (error) {
     console.error('Error during initialization:', error);
     process.exit(1); // Exit process if initialization fails
@@ -37,10 +38,10 @@ async function initialize() {
 initialize();
 
 // Handle process termination (cleanup GPIO resources)
-process.on('SIGINT', () => {
-  cleanup(); // Cleanup GPIO resources
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
-});
+// process.on('SIGINT', () => {
+//   cleanup(); // Cleanup GPIO resources
+//   server.close(() => {
+//     console.log('Server closed');
+//     process.exit(0);
+//   });
+// });

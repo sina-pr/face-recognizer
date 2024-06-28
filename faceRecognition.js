@@ -2,8 +2,13 @@ const faceapi = require('face-api.js');
 const canvas = require('canvas');
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
-const { turnOnRgbLed, blinkRgbLed, turnOffRgbLed } = require('./ledController');
+// const { exec } = require('child_process');
+// const { turnOnRgbLed, blinkRgbLed, turnOffRgbLed } = require('./ledController');
+const {
+  faceDetectionNet,
+  faceDetectionOptions,
+  saveFile,
+} = require('./commons');
 
 const categories = {
   whitelist: [],
@@ -16,7 +21,7 @@ let faceMatchers = []; // Store face matchers here
 
 async function loadModels() {
   console.log('Loading face detection models...');
-  await faceapi.nets.ssdMobilenetv1.loadFromDisk('./weights');
+  await faceDetectionNet.loadFromDisk('./weights');
   await faceapi.nets.faceLandmark68Net.loadFromDisk('./weights');
   await faceapi.nets.faceRecognitionNet.loadFromDisk('./weights');
   console.log('Face detection models loaded successfully.');
@@ -25,19 +30,20 @@ async function loadModels() {
 async function captureImage() {
   return new Promise((resolve, reject) => {
     const QUERY_IMAGE = path.join(__dirname, 'captured_images', 'image.jpg');
-    const command = `libcamera-still -o ${QUERY_IMAGE}`;
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(`Error taking photo: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        reject(`libcamera-still error: ${stderr}`);
-        return;
-      }
-      console.log('Photo taken successfully:', stdout);
-      resolve(QUERY_IMAGE);
-    });
+    // const command = `libcamera-still -o ${QUERY_IMAGE}`;
+    // exec(command, (error, stdout, stderr) => {
+    //   if (error) {
+    //     reject(`Error taking photo: ${error.message}`);
+    //     return;
+    //   }
+    //   if (stderr) {
+    //     reject(`libcamera-still error: ${stderr}`);
+    //     return;
+    //   }
+    //   console.log('Photo taken successfully:', stdout);
+    //   resolve(QUERY_IMAGE);
+    // });
+    resolve(QUERY_IMAGE);
   });
 }
 
@@ -56,41 +62,41 @@ async function compareImages(QUERY_IMAGE, SIMILARITY_THRESHOLD) {
       const similarity = bestMatch.distance;
       if (similarity < SIMILARITY_THRESHOLD) {
         console.log(`Verified with similarity ${similarity}: ${refMatch.name}`);
-        handleAccess(refMatch.name);
+        // handleAccess(refMatch.name);
         return;
       }
     }
   }
   console.log('No match found in reference images.');
-  denyAccess();
+  // denyAccess();
 }
 
-function handleAccess(name) {
-  if (categories.blacklist.includes(name)) {
-    console.log(`Access Denied: ${name} is on the blacklist.`);
-    blinkRgbLed(255, 0, 0, 2); // Blink red
-  } else if (categories.whitelist.includes(name)) {
-    console.log(`Access Granted: ${name} is on the whitelist.`);
-    turnOnRgbLed(0, 255, 0); // Turn green on
-  } else if (categories.greylist.includes(name)) {
-    console.log(`Greylist - Waiting for request for ${name}.`);
-    waiting = true;
-    turnOnRgbLed(255, 255, 0); // Turn yellow on
-    setTimeout(() => {
-      console.log('Request timeout - Access Denied');
-      waiting = false;
-      turnOffRgbLed();
-      blinkRgbLed(255, 0, 0, 2); // Blink red
-    }, 30000); // 30 seconds to send a request
-  } else {
-    console.log(`Person not categorized: ${name}`);
-  }
-}
+// function handleAccess(name) {
+//   if (categories.blacklist.includes(name)) {
+//     console.log(`Access Denied: ${name} is on the blacklist.`);
+//     blinkRgbLed(255, 0, 0, 2); // Blink red
+//   } else if (categories.whitelist.includes(name)) {
+//     console.log(`Access Granted: ${name} is on the whitelist.`);
+//     turnOnRgbLed(0, 255, 0); // Turn green on
+//   } else if (categories.greylist.includes(name)) {
+//     console.log(`Greylist - Waiting for request for ${name}.`);
+//     waiting = true;
+//     turnOnRgbLed(255, 255, 0); // Turn yellow on
+//     setTimeout(() => {
+//       console.log('Request timeout - Access Denied');
+//       waiting = false;
+//       turnOffRgbLed();
+//       blinkRgbLed(255, 0, 0, 2); // Blink red
+//     }, 30000); // 30 seconds to send a request
+//   } else {
+//     console.log(`Person not categorized: ${name}`);
+//   }
+// }
 
-function denyAccess() {
-  console.log('Access Denied: No match found.');
-  turnOnRgbLed(255, 0, 0); // Turn red on
-}
+// function denyAccess() {
+//   console.log('Access Denied: No match found.');
+//   turnOnRgbLed(255, 0, 0); // Turn red on
+// }
 
 async function createFaceMatchers() {
   const referenceImagesDir = path.join(__dirname, 'verified_persons');
