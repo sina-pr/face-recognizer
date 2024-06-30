@@ -2,13 +2,14 @@ const faceapi = require('face-api.js');
 const canvas = require('canvas');
 const path = require('path');
 const fs = require('fs');
-// const { exec } = require('child_process');
-// const { turnOnRgbLed, blinkRgbLed, turnOffRgbLed } = require('./ledController');
+const { exec } = require('child_process');
+const { turnOnRgbLed, blinkRgbLed, turnOffRgbLed } = require('./ledController');
 const {
   faceDetectionNet,
   faceDetectionOptions,
   saveFile,
 } = require('./commons');
+const { turnOnBuzzer, buzzFor } = require('./buzzerController');
 
 const categories = {
   whitelist: [],
@@ -62,41 +63,46 @@ async function compareImages(QUERY_IMAGE, SIMILARITY_THRESHOLD) {
       const similarity = bestMatch.distance;
       if (similarity < SIMILARITY_THRESHOLD) {
         console.log(`Verified with similarity ${similarity}: ${refMatch.name}`);
-        // handleAccess(refMatch.name);
+        handleAccess(refMatch.name);
         return;
       }
     }
   }
   console.log('No match found in reference images.');
-  // denyAccess();
+  denyAccess();
 }
 
-// function handleAccess(name) {
-//   if (categories.blacklist.includes(name)) {
-//     console.log(`Access Denied: ${name} is on the blacklist.`);
-//     blinkRgbLed(255, 0, 0, 2); // Blink red
-//   } else if (categories.whitelist.includes(name)) {
-//     console.log(`Access Granted: ${name} is on the whitelist.`);
-//     turnOnRgbLed(0, 255, 0); // Turn green on
-//   } else if (categories.greylist.includes(name)) {
-//     console.log(`Greylist - Waiting for request for ${name}.`);
-//     waiting = true;
-//     turnOnRgbLed(255, 255, 0); // Turn yellow on
-//     setTimeout(() => {
-//       console.log('Request timeout - Access Denied');
-//       waiting = false;
-//       turnOffRgbLed();
-//       blinkRgbLed(255, 0, 0, 2); // Blink red
-//     }, 30000); // 30 seconds to send a request
-//   } else {
-//     console.log(`Person not categorized: ${name}`);
-//   }
-// }
+function handleAccess(name) {
+  if (categories.blacklist.includes(name)) {
+    console.log(`Access Denied: ${name} is on the blacklist.`);
+    blinkRgbLed(255, 0, 0, 2); // Blink red
+    buzzFor(2000); // Buzz for 2 seconds
+  } else if (categories.whitelist.includes(name)) {
+    console.log(`Access Granted: ${name} is on the whitelist.`);
+    turnOnRgbLed(0, 255, 0); // Turn green on
+    buzzFor(1000); // Buzz for 1 second
+  } else if (categories.greylist.includes(name)) {
+    console.log(`Greylist - Waiting for request for ${name}.`);
+    waiting = true;
+    turnOnRgbLed(255, 255, 0); // Turn yellow on
+    buzzFor(1000); // Buzz for 1 second
+    setTimeout(() => {
+      console.log('Request timeout - Access Denied');
+      waiting = false;
+      turnOffRgbLed();
+      blinkRgbLed(255, 0, 0, 2); // Blink red
+      buzzFor(2000); // Buzz for 2 seconds
+    }, 30000); // 30 seconds to send a request
+  } else {
+    console.log(`Person not categorized: ${name}`);
+  }
+}
 
-// function denyAccess() {
-//   console.log('Access Denied: No match found.');
-//   turnOnRgbLed(255, 0, 0); // Turn red on
-// }
+function denyAccess() {
+  console.log('Access Denied: No match found.');
+  turnOnRgbLed(255, 0, 0); // Turn red on
+  buzzFor(2000); // Buzz for 2 seconds
+}
 
 async function createFaceMatchers() {
   const referenceImagesDir = path.join(__dirname, 'verified_persons');
@@ -129,6 +135,7 @@ async function initializeFaceRecognition() {
   console.log('Initializing face recognition system...');
   await loadModels();
   await createFaceMatchers();
+  await runFaceRecognition();
   console.log('Face recognition system initialized successfully.');
 }
 

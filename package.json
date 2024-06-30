@@ -12,7 +12,7 @@
   "dependencies": {
     "canvas": "^2.11.2",
     "express": "^4.19.2",
-    "face-api.js": "^0.20.2",
+    "face-api.js": "^0.22.2",
     "pigpio": "^3.3.1"
   }
 }

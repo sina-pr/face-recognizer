@@ -1,7 +1,7 @@
 const { Gpio } = require('pigpio');
 
 // Define the GPIO pin number for the button
-const buttonPin = 4;
+const buttonPin = 40;
 
 // Create a new GPIO instance for the button
 const button = new Gpio(buttonPin, {
