@@ -1,5 +1,6 @@
 const { turnOnRgbLed } = require('./ledController');
-const { waiting } = require('./faceRecognition');
+const faceRecognition = require('./faceRecognition');
+const { openDoor } = require('./doorController');
 
 const users = [
   { username: 'user1', password: 'pass1' },
@@ -22,9 +23,11 @@ function setupRoutes(app) {
 
   app.get('/open-door', async (req, res) => {
     try {
-      if (waiting) {
+      if (faceRecognition.waiting) {
         turnOnRgbLed(0, 255, 0); // Turn green on
-        waiting = false;
+        buzzFor(500); // Buzz for 1 second
+        openDoor();
+        faceRecognition.waiting = false;
         res.json({ success: true });
       } else {
         res.json({

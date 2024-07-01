@@ -8,7 +8,7 @@ function turnOnRgbLed(r, g, b) {
   redPin.pwmWrite(255 - r);
   greenPin.pwmWrite(255 - g);
   bluePin.pwmWrite(255 - b);
-  setTimeout(turnOffRgbLed, 3000); // Turn off LED after 3 seconds
+  setTimeout(turnOffRgbLed, 5000); // Turn off LED after 5 seconds
 }
 
 function turnOffRgbLed() {

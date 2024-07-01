@@ -60,8 +60,8 @@ async function compareImages(QUERY_IMAGE, SIMILARITY_THRESHOLD) {
   for (const res of resultsQuery) {
     for (const refMatch of faceMatchers) {
       const bestMatch = refMatch.faceMatcher.findBestMatch(res.descriptor);
-      const similarity = bestMatch.distance;
-      if (similarity < SIMILARITY_THRESHOLD) {
+      const similarity = 1 - bestMatch.distance;
+      if (similarity > SIMILARITY_THRESHOLD) {
         console.log(`Verified with similarity ${similarity}: ${refMatch.name}`);
         handleAccess(refMatch.name);
         return;
@@ -81,16 +81,19 @@ function handleAccess(name) {
     console.log(`Access Granted: ${name} is on the whitelist.`);
     turnOnRgbLed(0, 255, 0); // Turn green on
     buzzFor(500); // Buzz for 1 second
+    openDoor(); // Open the door
   } else if (categories.greylist.includes(name)) {
     console.log(`Greylist - Waiting for request for ${name}.`);
     waiting = true;
     turnOnRgbLed(255, 255, 0); // Turn yellow on
     setTimeout(() => {
-      console.log('Request timeout - Access Denied');
-      waiting = false;
-      turnOffRgbLed();
-      blinkRgbLed(255, 0, 0, 2); // Blink red
-      buzzFor(2000); // Buzz for 2 seconds
+      if (waiting) {
+        console.log('Request timeout - Access Denied');
+        waiting = false;
+        turnOffRgbLed();
+        blinkRgbLed(255, 0, 0, 2); // Blink red
+        buzzFor(2000); // Buzz for 2 seconds
+      }
     }, 30000); // 30 seconds to send a request
   } else {
     console.log(`Person not categorized: ${name}`);
@@ -134,7 +137,6 @@ async function initializeFaceRecognition() {
   console.log('Initializing face recognition system...');
   await loadModels();
   await createFaceMatchers();
-  await runFaceRecognition();
   console.log('Face recognition system initialized successfully.');
 }
 
