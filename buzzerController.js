@@ -1,6 +1,6 @@
 const { Gpio } = require('pigpio');
 
-const buzzerPin = new Gpio(18, { mode: Gpio.OUTPUT }); // Use GPIO 18 for the buzzer
+const buzzerPin = new Gpio(24, { mode: Gpio.OUTPUT }); // Use GPIO 18 for the buzzer
 
 function turnOnBuzzer() {
   buzzerPin.digitalWrite(1); // Turn on buzzer
