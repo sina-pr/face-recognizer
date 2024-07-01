@@ -80,12 +80,11 @@ function handleAccess(name) {
   } else if (categories.whitelist.includes(name)) {
     console.log(`Access Granted: ${name} is on the whitelist.`);
     turnOnRgbLed(0, 255, 0); // Turn green on
-    buzzFor(1000); // Buzz for 1 second
+    buzzFor(500); // Buzz for 1 second
   } else if (categories.greylist.includes(name)) {
     console.log(`Greylist - Waiting for request for ${name}.`);
     waiting = true;
     turnOnRgbLed(255, 255, 0); // Turn yellow on
-    buzzFor(1000); // Buzz for 1 second
     setTimeout(() => {
       console.log('Request timeout - Access Denied');
       waiting = false;
