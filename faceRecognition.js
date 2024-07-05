@@ -10,7 +10,7 @@ const {
   saveFile,
 } = require('./commons');
 const { turnOnBuzzer, buzzFor } = require('./buzzerController');
-
+const {openDoor} = require('./doorController')
 const categories = {
   whitelist: [],
   blacklist: [],

@@ -1,6 +1,6 @@
 const { Gpio } = require('pigpio');
 
-const doorPin = new Gpio(4, { mode: Gpio.OUTPUT }); // Use GPIO 18 for the door control
+const doorPin = new Gpio(14, { mode: Gpio.OUTPUT }); // Use GPIO 18 for the door control
 
 function openDoor() {
   doorPin.digitalWrite(0); // Send a pulse to open the door

@@ -5,6 +5,7 @@ const {
   runFaceRecognition,
 } = require('./faceRecognition');
 const { setupRoutes } = require('./routes');
+const { setupButtonListener } = require('./buttonController');
 // const { setupButtonListener, cleanup } = require('./buttonController');
 
 const app = express();
@@ -26,8 +27,8 @@ const server = app.listen(port, () => {
 async function initialize() {
   try {
     await initializeFaceRecognition(); // Load models and create face matchers
-    // setupButtonListener(runFaceRecognition); // Setup button listener
-    await runFaceRecognition();
+    setupButtonListener(runFaceRecognition); // Setup button listener
+    // await runFaceRecognition();
   } catch (error) {
     console.error('Error during initialization:', error);
     process.exit(1); // Exit process if initialization fails

@@ -1,8 +1,8 @@
 const { Gpio } = require('pigpio');
 
-const redPin = new Gpio(17, { mode: Gpio.OUTPUT });
-const greenPin = new Gpio(27, { mode: Gpio.OUTPUT });
-const bluePin = new Gpio(22, { mode: Gpio.OUTPUT });
+const redPin = new Gpio(10, { mode: Gpio.OUTPUT });
+const greenPin = new Gpio(22, { mode: Gpio.OUTPUT });
+const bluePin = new Gpio(27, { mode: Gpio.OUTPUT });
 
 function turnOnRgbLed(r, g, b) {
   redPin.pwmWrite(255 - r);
