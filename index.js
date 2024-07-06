@@ -6,6 +6,7 @@ const {
 } = require('./faceRecognition');
 const { setupRoutes } = require('./routes');
 const { setupButtonListener } = require('./buttonController');
+const { initializeLightController } = require('./lightController');
 
 const app = express();
 const port = 3000;
@@ -32,6 +33,8 @@ async function initialize() {
   }
 }
 
+initializeLightController();
+
 initialize();
 
-initializeLightController();
+

@@ -61,6 +61,7 @@ async function compareImages(QUERY_IMAGE, SIMILARITY_THRESHOLD) {
     for (const refMatch of faceMatchers) {
       const bestMatch = refMatch.faceMatcher.findBestMatch(res.descriptor);
       const similarity = 1 - bestMatch.distance;
+      console.log(similarity)
       if (similarity > SIMILARITY_THRESHOLD) {
         console.log(`Verified with similarity ${similarity}: ${refMatch.name}`);
         handleAccess(refMatch.name);
@@ -144,7 +145,7 @@ async function runFaceRecognition() {
   try {
     console.log('Running face recognition process...');
     const QUERY_IMAGE = await captureImage();
-    const SIMILARITY_THRESHOLD = 0.6;
+    const SIMILARITY_THRESHOLD = 0.35;
     await compareImages(QUERY_IMAGE, SIMILARITY_THRESHOLD);
   } catch (error) {
     console.error('Error during face recognition process:', error);

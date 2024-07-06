@@ -1,6 +1,7 @@
 const { turnOnRgbLed } = require('./ledController');
 const faceRecognition = require('./faceRecognition');
 const { openDoor } = require('./doorController');
+const { buzzFor } = require('./buzzerController');
 
 const users = [
   { username: 'user1', password: 'pass1' },

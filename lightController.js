@@ -3,6 +3,7 @@ const { Gpio } = require('pigpio');
 function initializeLightController() {
   const LDRPin = new Gpio(20, { mode: Gpio.INPUT, alert: true });
   const LED = new Gpio(16, { mode: Gpio.OUTPUT });
+  LED.digitalWrite(1);
 
   LDRPin.on('alert', (level) => {
     console.log(`Brightness level: ${level}`);
